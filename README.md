@@ -211,4 +211,4 @@ For issues or questions:
 
 ---
 
-**Built with ❤️ for modern dental practices**
+**Built with ❤️ By Miss Yahiaoui for modern dental practices**
