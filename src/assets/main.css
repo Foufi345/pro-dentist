@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-warm-beige text-dark-taupe;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+  }
+  
+  .btn-secondary {
+    @apply bg-sky-100 hover:bg-sky-200 text-teal-700 px-6 py-3 rounded-lg font-medium transition-all duration-300 border-2 border-sky-200 hover:border-sky-300;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 p-6 border border-gray-100;
+  }
+  
+  .section-padding {
+    @apply px-6 py-16 md:px-12 lg:px-20;
+  }
+  
+  .animate-on-scroll {
+    @apply opacity-0 translate-y-8;
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  
+  .animate-on-scroll.animated {
+    @apply opacity-100 translate-y-0;
+  }
+  
+  .back-to-top {
+    @apply fixed bottom-8 right-8 bg-gradient-to-r from-teal-500 to-teal-600 text-white p-4 rounded-full shadow-2xl cursor-pointer transition-all duration-300 hover:from-teal-600 hover:to-teal-700 hover:scale-110 z-50;
+  }
+}
