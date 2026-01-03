@@ -366,7 +366,7 @@ const handleSubmit = async () => {
   }
 
   try {
-    const GOOGLE_SHEETS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxGcBaTAb75mxDo3H9OObn4J19BN70-FwsNvBpEpj3CydZokZQteYP74IFka6IQlvBd/exec'
+    const GOOGLE_SHEETS_WEBHOOK_URL = import.meta.env.VITE_GOOGLE_SHEETS_WEBHOOK_URL
 
     await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
       method: 'POST',
