@@ -106,14 +106,15 @@
             <div class="grid md:grid-cols-2 gap-6">
               <div>
                 <label class="block text-sm font-semibold text-dark-taupe mb-2">{{ t('booking.firstName') }} *</label>
-                <input type="text" v-model="formData.firstName" required
-                  :placeholder="t('booking.firstNamePlaceholder')"
+                <input type="text" v-model="formData.firstName" required @paste.prevent
+                  :placeholder="t('booking.firstNamePlaceholder')" maxlength="50"
                   class="w-full px-4 py-3 border-2 border-stone-200 rounded-lg focus:border-teal-500 focus:outline-none transition-colors" />
               </div>
 
               <div>
                 <label class="block text-sm font-semibold text-dark-taupe mb-2">{{ t('booking.lastName') }} *</label>
                 <input type="text" v-model="formData.lastName" required :placeholder="t('booking.lastNamePlaceholder')"
+                  @paste.prevent maxlength="50"
                   class="w-full px-4 py-3 border-2 border-stone-200 rounded-lg focus:border-teal-500 focus:outline-none transition-colors" />
               </div>
             </div>
@@ -122,14 +123,15 @@
             <div class="grid md:grid-cols-2 gap-6">
               <div>
                 <label class="block text-sm font-semibold text-dark-taupe mb-2">{{ t('booking.phone') }} *</label>
-                <input type="tel" v-model="formData.phone" required :placeholder="t('booking.phonePlaceholder')"
+                <input type="tel" :value="formData.phone" @input="handlePhoneInput" required
+                  :placeholder="t('booking.phonePlaceholder')" maxlength="10" @paste.prevent
                   class="w-full px-4 py-3 border-2 border-stone-200 rounded-lg focus:border-teal-500 focus:outline-none transition-colors" />
               </div>
 
               <div>
                 <label class="block text-sm font-semibold text-dark-taupe mb-2">{{ t('booking.age') }} *</label>
                 <input type="number" v-model="formData.age" required min="1" max="120"
-                  :placeholder="t('booking.agePlaceholder')"
+                  :placeholder="t('booking.agePlaceholder')" @paste.prevent
                   class="w-full px-4 py-3 border-2 border-stone-200 rounded-lg focus:border-teal-500 focus:outline-none transition-colors" />
               </div>
             </div>
@@ -137,7 +139,7 @@
             <!-- Email (Optional) -->
             <div>
               <label class="block text-sm font-semibold text-dark-taupe mb-2">{{ t('booking.email') }}</label>
-              <input type="email" v-model="formData.email" :placeholder="t('booking.emailPlaceholder')"
+              <input type="email" v-model="formData.email" :placeholder="t('booking.emailPlaceholder')" @paste.prevent
                 class="w-full px-4 py-3 border-2 border-stone-200 rounded-lg focus:border-teal-500 focus:outline-none transition-colors" />
             </div>
 
@@ -153,8 +155,11 @@
             <!-- Additional Notes -->
             <div>
               <label class="block text-sm font-semibold text-dark-taupe mb-2">{{ t('booking.notes') }}</label>
-              <textarea v-model="formData.notes" rows="3" :placeholder="t('booking.notesPlaceholder')"
+              <textarea :value="formData.notes" @input="handleNotesInput" rows="3" :placeholder="t('booking.notesPlaceholder')" @paste.prevent
                 class="w-full px-4 py-3 border-2 border-stone-200 rounded-lg focus:border-teal-500 focus:outline-none transition-colors resize-none"></textarea>
+              <div class="text-xs text-right text-gray-400 mt-1">
+                {{ formData.notes ? formData.notes.trim().split(/\s+/).length : 0 }}/200 {{ t('booking.words') || 'words' }}
+              </div>
             </div>
           </div>
 
@@ -235,13 +240,10 @@ const services = computed(() => [
     icon: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>`
   },
   {
-    value: 'consultation',
-    label: t('services.generalCheckup'), // 'Consultation' isn't explicitly in used keys listing I saw, reusing General Checkup or Learn More?
-    // Wait, let me check useI18n.ts content again if possible. I recall 'generalCheckup' and 'learnMore'.
-    // Ah, 'services.generalCheckup' is "General Checkup". 'consultation' implies general checkup usually.
-    // Or I can use t('services.generalCheckup') as fallback.
+    value: 'orthodontics',
+    label: t('services.orthodontics'),
     duration: '20-30 min',
-    icon: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>`
+    icon: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>`
   }
 ])
 
@@ -347,21 +349,23 @@ const handleSubmit = async () => {
   // Update last submission time for rate limiting
   lastSubmissionTime.value = Date.now()
 
-  // Prepare data for Google Sheets
+  // Prepare data for Google Sheets - All in French
+  // Find the selected service label in French
+  const selectedService = services.value.find(s => s.value === formData.value.service)
+  const serviceFrench = selectedService ? selectedService.label : formData.value.service
+
   const bookingData = {
     timestamp: new Date().toISOString(),
     firstName: formData.value.firstName,
     lastName: formData.value.lastName,
     phone: formData.value.phone,
     age: formData.value.age,
-    email: formData.value.email || 'Not provided',
-    service: formData.value.service, // Always in French
+    email: formData.value.email || 'Non fourni',
+    service: serviceFrench, // Service name in French
     date: formData.value.date,
     time: formData.value.time,
-    isNewPatient: formData.value.isNewPatient ? 'Yes' : 'No',
-    notes: formData.value.notes || 'None',
-    sessionToken: sessionToken.value,
-    formDuration: Math.floor((Date.now() - formStartTime.value) / 1000), // seconds
+    isNewPatient: formData.value.isNewPatient ? 'Oui' : 'Non',
+    notes: formData.value.notes || 'Aucune',
     userLanguage: currentLanguage.value.toUpperCase() // FR or AR
   }
 
@@ -409,6 +413,62 @@ const resetForm = () => {
   // Reset security tokens for new form
   formStartTime.value = Date.now()
   sessionToken.value = generateSessionToken()
+}
+
+const handlePhoneInput = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  // Remove non-numeric characters and limit to 10 digits
+  const value = input.value.replace(/\D/g, '').slice(0, 10)
+  formData.value.phone = value
+  // Force input value update to ensure display matches model (stripping non-digits)
+  if (input.value !== value) {
+    input.value = value
+  }
+}
+
+const handleNotesInput = (event: Event) => {
+  const input = event.target as HTMLTextAreaElement
+  const value = input.value
+
+  // Count words
+  // Regex matches non-whitespace sequences
+  const words = value.match(/\S+/g) || []
+
+  if (words.length > 200) {
+    // If we have more than 200 words, we need to find where the 200th word ends
+    let wordCount = 0
+    let cutoffIndex = 0
+
+    // Iterate through chars to find the end of the 200th word
+    for (let i = 0; i < value.length; i++) {
+      // If current char is non-whitespace
+      if (/\S/.test(value[i] || '')) {
+        // If it's the start of a word (prev is whitespace or start)
+        if (i === 0 || /\s/.test(value[i-1] || '')) {
+          wordCount++
+        }
+
+        if (wordCount > 200) {
+          cutoffIndex = i
+          break
+        }
+      }
+    }
+
+    if (cutoffIndex > 0) {
+      // Cut off right before the 201st word starts, keep trailing whitespace of 200th word if any...
+      // ACTUALLY, usually we just want to stop adding.
+      // Trimming end makes it clean.
+      const newValue = value.substring(0, cutoffIndex).trimEnd()
+
+      // Update data and force input visual update
+      formData.value.notes = newValue
+      input.value = newValue
+      return
+    }
+  }
+
+  formData.value.notes = value
 }
 </script>
 

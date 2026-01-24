@@ -1,5 +1,5 @@
 <template>
-  <section class="section-padding bg-gradient-to-br from-teal-50 to-white">
+  <section id="testimonials" class="section-padding bg-gradient-to-br from-teal-50 to-white">
     <div class="max-w-7xl mx-auto">
       <div class="text-center mb-16 animate-on-scroll">
         <h2 class="text-4xl md:text-5xl font-bold text-dark-taupe mb-4">{{ t('testimonials.title') }}</h2>

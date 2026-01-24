@@ -147,7 +147,8 @@ const translations = {
                   // Validation
                   required: 'This field is required',
                   invalidEmail: 'Invalid email',
-                  invalidPhone: 'Invalid phone number'
+                  invalidPhone: 'Invalid phone number',
+                  words: 'words'
             },
 
             // Maps Section
@@ -311,7 +312,8 @@ const translations = {
                   // Validation
                   required: 'Ce champ est requis',
                   invalidEmail: 'Email invalide',
-                  invalidPhone: 'Numéro de téléphone invalide'
+                  invalidPhone: 'Numéro de téléphone invalide',
+                  words: 'mots'
             },
 
             // Maps Section
@@ -475,7 +477,8 @@ const translations = {
                   // Validation
                   required: 'هذا الحقل مطلوب',
                   invalidEmail: 'البريد الإلكتروني غير صالح',
-                  invalidPhone: 'رقم الهاتف غير صالح'
+                  invalidPhone: 'رقم الهاتف غير صالح',
+                  words: 'كلمات'
             },
 
             // Maps Section
